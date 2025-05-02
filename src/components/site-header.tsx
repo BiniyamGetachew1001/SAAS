@@ -24,6 +24,14 @@ export function SiteHeader() {
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link
+              href="/books"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                pathname === "/books" || pathname.startsWith("/books/") ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Books
+            </Link>
+            <Link
               href="/summaries"
               className={`text-sm font-medium transition-colors hover:text-primary ${
                 pathname === "/summaries" ? "text-foreground" : "text-muted-foreground"
@@ -70,6 +78,9 @@ export function SiteHeader() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href="/books">Books</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/summaries">Book Summaries</Link>
               </DropdownMenuItem>
