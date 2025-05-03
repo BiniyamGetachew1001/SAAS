@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { MainLayout } from "@/components/main-layout";
 import { Button } from "@/components/ui/button";
@@ -100,10 +102,10 @@ export default function BusinessIdeasPage() {
                           <CardTitle>{idea.title}</CardTitle>
                           <CardDescription>
                             <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
-                              idea.category === "Small" 
-                                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
-                                : idea.category === "Medium" 
-                                ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" 
+                              idea.category === "Small"
+                                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : idea.category === "Medium"
+                                ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                                 : "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
                             } mt-2`}>
                               {idea.category}

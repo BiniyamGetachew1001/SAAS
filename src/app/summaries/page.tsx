@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { MainLayout } from "@/components/main-layout";
 import { Button } from "@/components/ui/button";

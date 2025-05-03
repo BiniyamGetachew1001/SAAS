@@ -1,3 +1,5 @@
+"use client";
+
 import { MainLayout } from "@/components/main-layout";
 import { Button } from "@/components/ui/button";
 import { BookPreview } from "@/components/book-preview";
