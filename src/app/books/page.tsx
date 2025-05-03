@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MainLayout } from "@/components/main-layout";
 import { BookCard } from "@/components/book-card";
 import { BookSearch, BookFilters } from "@/components/book-search";
@@ -147,7 +147,7 @@ export default function BooksPage() {
   const categories = Array.from(new Set(books.map(book => book.category)));
 
   // Handle search and filtering
-  const handleSearch = (query: string, filters: BookFilters) => {
+  const handleSearch = useCallback((query: string, filters: BookFilters) => {
     setSearchQuery(query);
     setActiveFilters(filters);
 
@@ -205,7 +205,7 @@ export default function BooksPage() {
     }
 
     setFilteredBooks(results);
-  };
+  }, []);
 
   return (
     <MainLayout>

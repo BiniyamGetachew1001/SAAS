@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 
@@ -35,7 +35,8 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
   // Apply search when filters change
   useEffect(() => {
     onSearch(query, filters);
-  }, [filters, onSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +72,9 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
           />
         </div>
         <Button type="submit">Search</Button>
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2"
         >
@@ -86,9 +87,9 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
         <div className="rounded-lg border p-4 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium">Filters</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={resetFilters}
               className="h-8 text-xs"
             >
@@ -99,8 +100,8 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
-              <Select 
-                value={filters.category} 
+              <Select
+                value={filters.category}
                 onValueChange={(value) => handleFilterChange("category", value)}
               >
                 <SelectTrigger>
@@ -118,8 +119,8 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Price Range</label>
-              <Select 
-                value={filters.priceRange} 
+              <Select
+                value={filters.priceRange}
                 onValueChange={(value) => handleFilterChange("priceRange", value)}
               >
                 <SelectTrigger>
@@ -136,8 +137,8 @@ export function BookSearch({ onSearch, categories }: BookSearchProps) {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Sort By</label>
-              <Select 
-                value={filters.sortBy} 
+              <Select
+                value={filters.sortBy}
                 onValueChange={(value) => handleFilterChange("sortBy", value)}
               >
                 <SelectTrigger>
