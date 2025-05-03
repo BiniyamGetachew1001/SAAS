@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/main-layout";
-import { AdminMiddleware } from "@/components/admin-middleware";
+import { AdminWrapper } from "@/components/admin-wrapper";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,7 +51,7 @@ export default function MCPDashboardPage() {
   };
 
   return (
-    <AdminMiddleware>
+    <AdminWrapper>
       <MainLayout>
         <div className="container mx-auto py-10">
           <h1 className="text-3xl font-bold mb-6">MCP Dashboard</h1>
@@ -267,6 +267,6 @@ export default function MCPDashboardPage() {
           </Tabs>
         </div>
       </MainLayout>
-    </AdminMiddleware>
+    </AdminWrapper>
   );
 }

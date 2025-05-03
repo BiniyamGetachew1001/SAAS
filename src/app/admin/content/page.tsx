@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/main-layout";
-import { AdminMiddleware } from "@/components/admin-middleware";
+import { AdminWrapper } from "@/components/admin-wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,7 +134,7 @@ export default function ContentManagementPage() {
   };
 
   return (
-    <AdminMiddleware>
+    <AdminWrapper>
       <MainLayout>
         <div className="container py-8">
           <div className="flex flex-col gap-6">
@@ -550,6 +550,6 @@ export default function ContentManagementPage() {
           </div>
         </div>
       </MainLayout>
-    </AdminMiddleware>
+    </AdminWrapper>
   );
 }

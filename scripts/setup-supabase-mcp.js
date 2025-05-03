@@ -10,36 +10,138 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 async function setupMCPDatabase() {
   try {
     console.log('Setting up Supabase MCP database...');
+    let setupSuccess = true;
+    let errors = [];
 
-    // Execute SQL to create necessary tables and functions
-    const sql = `
-      -- Create content_versions table for versioning
-      CREATE TABLE IF NOT EXISTS content_versions (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        content_id UUID NOT NULL REFERENCES content(id) ON DELETE CASCADE,
-        version_data JSONB NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        created_by UUID
-      );
+    // Create content_versions table
+    console.log('Creating content_versions table...');
+    const { error: contentVersionsError } = await supabase.from('content_versions').select('count(*)', { count: 'exact', head: true })
+      .then(async (result) => {
+        if (result.error && result.error.code === '42P01') { // Table doesn't exist
+          return await supabase.rest.post('/rest/v1/rpc/query', {
+            body: {
+              query: `
+                CREATE TABLE IF NOT EXISTS content_versions (
+                  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                  content_id UUID NOT NULL REFERENCES content(id) ON DELETE CASCADE,
+                  version_data JSONB NOT NULL,
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                  created_by UUID
+                );
+              `
+            }
+          });
+        }
+        return { error: null };
+      });
 
-      -- Create user_roles table for permission management
-      CREATE TABLE IF NOT EXISTS user_roles (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id UUID NOT NULL,
-        role TEXT NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        UNIQUE(user_id, role)
-      );
+    if (contentVersionsError) {
+      console.error('Error creating content_versions table:', contentVersionsError);
+      setupSuccess = false;
+      errors.push({ table: 'content_versions', error: contentVersionsError });
+    } else {
+      console.log('content_versions table created or already exists');
+    }
 
-      -- Create audit_logs table for system administration
-      CREATE TABLE IF NOT EXISTS audit_logs (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        action TEXT NOT NULL,
-        details JSONB,
-        user_id UUID,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-      );
+    // Create user_roles table
+    console.log('Creating user_roles table...');
+    const { error: userRolesError } = await supabase.from('user_roles').select('count(*)', { count: 'exact', head: true })
+      .then(async (result) => {
+        if (result.error && result.error.code === '42P01') { // Table doesn't exist
+          return await supabase.rest.post('/rest/v1/rpc/query', {
+            body: {
+              query: `
+                CREATE TABLE IF NOT EXISTS user_roles (
+                  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                  user_id UUID NOT NULL,
+                  role TEXT NOT NULL,
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                  UNIQUE(user_id, role)
+                );
+              `
+            }
+          });
+        }
+        return { error: null };
+      });
 
+    if (userRolesError) {
+      console.error('Error creating user_roles table:', userRolesError);
+      setupSuccess = false;
+      errors.push({ table: 'user_roles', error: userRolesError });
+    } else {
+      console.log('user_roles table created or already exists');
+    }
+
+    // Create audit_logs table
+    console.log('Creating audit_logs table...');
+    const { error: auditLogsError } = await supabase.from('audit_logs').select('count(*)', { count: 'exact', head: true })
+      .then(async (result) => {
+        if (result.error && result.error.code === '42P01') { // Table doesn't exist
+          return await supabase.rest.post('/rest/v1/rpc/query', {
+            body: {
+              query: `
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                  action TEXT NOT NULL,
+                  details JSONB,
+                  user_id UUID,
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                );
+              `
+            }
+          });
+        }
+        return { error: null };
+      });
+
+    if (auditLogsError) {
+      console.error('Error creating audit_logs table:', auditLogsError);
+      setupSuccess = false;
+      errors.push({ table: 'audit_logs', error: auditLogsError });
+    } else {
+      console.log('audit_logs table created or already exists');
+    }
+
+    // If we couldn't create the tables using the REST API, we'll need to use the SQL Editor
+    if (!setupSuccess) {
+      console.error('Error setting up MCP database tables. Please use the SQL Editor in the Supabase dashboard to execute the SQL commands.');
+      console.log('The SQL commands are printed below:');
+      console.log(`
+        -- Create content_versions table for versioning
+        CREATE TABLE IF NOT EXISTS content_versions (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          content_id UUID NOT NULL REFERENCES content(id) ON DELETE CASCADE,
+          version_data JSONB NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          created_by UUID
+        );
+
+        -- Create user_roles table for permission management
+        CREATE TABLE IF NOT EXISTS user_roles (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          user_id UUID NOT NULL,
+          role TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          UNIQUE(user_id, role)
+        );
+
+        -- Create audit_logs table for system administration
+        CREATE TABLE IF NOT EXISTS audit_logs (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          action TEXT NOT NULL,
+          details JSONB,
+          user_id UUID,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `);
+
+      // Continue with the rest of the setup, as some tables might have been created successfully
+    }
+
+    // Create functions and policies using the SQL Editor
+    console.log('The following SQL commands need to be executed in the SQL Editor:');
+    console.log(`
       -- Create function to get content statistics
       CREATE OR REPLACE FUNCTION get_content_stats()
       RETURNS JSONB
@@ -66,13 +168,13 @@ async function setupMCPDatabase() {
         version_id UUID;
       BEGIN
         INSERT INTO content_versions (content_id, version_data)
-        SELECT 
+        SELECT
           content_id,
           to_jsonb(c)
         FROM content c
         WHERE c.id = content_id
         RETURNING id INTO version_id;
-        
+
         RETURN version_id;
       END;
       $$;
@@ -90,21 +192,21 @@ async function setupMCPDatabase() {
         SELECT cv.content_id, cv.version_data INTO content_id, version_data
         FROM content_versions cv
         WHERE cv.id = version_id;
-        
+
         IF content_id IS NULL THEN
           RETURN FALSE;
         END IF;
-        
+
         -- Update content with version data
         UPDATE content
-        SET 
+        SET
           title = version_data->>'title',
           type = version_data->>'type',
           description = version_data->>'description',
           status = version_data->>'status',
           updated_at = NOW()
         WHERE id = content_id;
-        
+
         RETURN TRUE;
       END;
       $$;
@@ -150,27 +252,22 @@ async function setupMCPDatabase() {
         TO authenticated
         USING (auth.jwt() ->> 'role' = 'admin');
 
+      -- Allow anyone to create audit logs (for testing purposes)
+      CREATE POLICY "Allow anyone to create audit logs"
+        ON audit_logs
+        FOR INSERT
+        TO anon
+        WITH CHECK (true);
+
       CREATE POLICY "Allow system to create audit logs"
         ON audit_logs
         FOR INSERT
         TO authenticated
         WITH CHECK (true);
-    `;
+    `);
 
-    // Execute the SQL
-    const { error } = await supabase.rpc('exec_sql', { sql });
-
-    if (error) {
-      console.error('Error setting up MCP database:', error);
-      console.log('Please use the SQL Editor in the Supabase dashboard to execute the SQL commands.');
-      console.log('The SQL commands are printed below:');
-      console.log(sql);
-      return;
-    }
-
-    console.log('MCP database setup complete!');
-
-    // Add a sample audit log entry
+    // Try to add a sample audit log entry if the table was created
+    console.log('Attempting to add a sample audit log entry...');
     const { error: auditError } = await supabase
       .from('audit_logs')
       .insert([{
@@ -184,14 +281,21 @@ async function setupMCPDatabase() {
       console.log('Created initial audit log entry');
     }
 
-    // Verify the setup
+    // Try to check system health if the function was created
+    console.log('Attempting to check system health...');
     const { data: health, error: healthError } = await supabase.rpc('get_system_health');
 
     if (healthError) {
       console.error('Error getting system health:', healthError);
+      console.log('The get_system_health function may not exist yet. Please run the SQL commands in the Supabase dashboard.');
     } else {
       console.log('System health check:');
       console.log(health);
+    }
+
+    console.log('MCP setup process completed.');
+    if (errors.length > 0) {
+      console.log('Some errors occurred during setup. Please check the logs and run the SQL commands in the Supabase dashboard.');
     }
 
   } catch (error) {

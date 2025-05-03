@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // These would typically come from environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-supabase-url.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xkwpocyyhwzyicutpzbd.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhrd3BvY3l5aHd6eWljdXRwemJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MzkzMDksImV4cCI6MjA2MTUxNTMwOX0.bdqsJ3rJ0BwELf7FQEXMHmHdgmWqMSJ5zv5dm-RAldA';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -25,12 +25,12 @@ export const contentService = {
       .from('content')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (error) {
       console.error('Error fetching content:', error);
       return [];
     }
-    
+
     return data || [];
   },
 
@@ -41,12 +41,12 @@ export const contentService = {
       .select('*')
       .eq('type', type)
       .order('created_at', { ascending: false });
-    
+
     if (error) {
       console.error(`Error fetching ${type} content:`, error);
       return [];
     }
-    
+
     return data || [];
   },
 
@@ -57,12 +57,12 @@ export const contentService = {
       .insert([item])
       .select()
       .single();
-    
+
     if (error) {
       console.error('Error creating content:', error);
       return null;
     }
-    
+
     return data;
   },
 
@@ -74,12 +74,12 @@ export const contentService = {
       .eq('id', id)
       .select()
       .single();
-    
+
     if (error) {
       console.error('Error updating content:', error);
       return null;
     }
-    
+
     return data;
   },
 
@@ -89,12 +89,12 @@ export const contentService = {
       .from('content')
       .delete()
       .eq('id', id);
-    
+
     if (error) {
       console.error('Error deleting content:', error);
       return false;
     }
-    
+
     return true;
   }
 };
