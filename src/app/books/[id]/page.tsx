@@ -1,5 +1,6 @@
 import { MainLayout } from "@/components/main-layout";
 import { Button } from "@/components/ui/button";
+import { BookPreview } from "@/components/book-preview";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,6 +29,22 @@ const books = [
     reviews: [
       { id: "r1", rating: 5, reviewer: "John D.", comment: "One of the best books on personal finance I've ever read." },
       { id: "r2", rating: 4, reviewer: "Sarah M.", comment: "Great insights into how psychology affects our financial decisions." }
+    ],
+    previewPages: [
+      `<h1>Chapter 1: No One's Crazy</h1>
+      <p>Let me tell you about a problem. It might make you feel better about what you do with your money, and less judgmental about what other people do with theirs.</p>
+      <p>People do some crazy things with money. But no one is crazy.</p>
+      <p>Here's the thing: People from different generations, raised by different parents who earned different incomes and held different values, in different parts of the world, born into different economies, experiencing different job markets with different incentives and different degrees of luck, learn very different lessons.</p>`,
+
+      `<h1>Chapter 2: Luck & Risk</h1>
+      <p>The line between "inspiringly bold" and "foolishly reckless" can be a millimeter thick and only visible with hindsight.</p>
+      <p>Risk and luck are doppelgangers. This is not an easy message to get across. We tend to view success as evidence of skill and failure as evidence of error.</p>
+      <p>The difficulty in identifying what is luck, what is skill, and what is risk is one of the biggest problems we face when trying to learn about the best way to manage money.</p>`,
+
+      `<h1>Chapter 3: Never Enough</h1>
+      <p>There is no reason to risk what you have and need for what you don't have and don't need.</p>
+      <p>The hardest financial skill is getting the goalpost to stop moving. It gets dangerous when the taste of having more—more money, more power, more prestige—increases ambition faster than satisfaction.</p>
+      <p>Modern capitalism is a pro at two things: generating wealth and generating envy. Perhaps they go hand in hand; wanting to surpass your peers can be the fuel of hard work.</p>`
     ]
   },
   {
@@ -51,6 +68,21 @@ const books = [
     reviews: [
       { id: "r1", rating: 5, reviewer: "Michael T.", comment: "Changed my approach to building habits completely." },
       { id: "r2", rating: 5, reviewer: "Lisa R.", comment: "Practical advice that you can implement immediately." }
+    ],
+    previewPages: [
+      `<h1>Introduction: My Story</h1>
+      <p>On the final day of my sophomore year of high school, I was hit in the face with a baseball bat. As my classmate took a full swing, the bat slipped out of his hands and came flying toward me before striking me directly between the eyes. I collapsed to the ground, blood pouring from above my nose.</p>
+      <p>The impact of the hit fractured my skull and sent fragments of bone into my brain. After eight hours of emergency surgery, I woke up to learn that I had been placed into a medically induced coma and had experienced significant memory loss. I forgot most of the previous school year and struggled to recognize friends and family members. When I returned to high school, I discovered that I needed to relearn how to study effectively.</p>`,
+
+      `<h1>Chapter 1: The Surprising Power of Atomic Habits</h1>
+      <p>It is so easy to overestimate the importance of one defining moment and underestimate the value of making small improvements on a daily basis. Too often, we convince ourselves that massive success requires massive action.</p>
+      <p>Meanwhile, improving by 1 percent isn't particularly notable—sometimes it isn't even noticeable—but it can be far more meaningful, especially in the long run. The difference a tiny improvement can make over time is astounding.</p>
+      <p>Here's how the math works out: if you can get 1 percent better each day for one year, you'll end up thirty-seven times better by the time you're done. Conversely, if you get 1 percent worse each day for one year, you'll decline nearly down to zero. What starts as a small win or a minor setback accumulates into something much more.</p>`,
+
+      `<h1>Chapter 2: How Your Habits Shape Your Identity (and Vice Versa)</h1>
+      <p>Changing our habits is challenging for two reasons: (1) we try to change the wrong thing and (2) we try to change our habits in the wrong way.</p>
+      <p>Many people begin the process of changing their habits by focusing on what they want to achieve. This leads us to outcome-based habits. The alternative is to build identity-based habits. With this approach, we start by focusing on who we wish to become.</p>
+      <p>Behind every system of actions are a system of beliefs. The system of a democracy is founded on beliefs like freedom, majority rule, and social equality. The system of a dictatorship has a very different set of beliefs like absolute authority and strict obedience. You can imagine many ways to try to get more people to vote in a democracy, but such behavior change would never get off the ground in a dictatorship. That's not the identity of the system.</p>`
     ]
   },
   // Additional books would be defined here
@@ -157,6 +189,11 @@ export default function BookPage({ params }: BookPageProps) {
                 <Button className="bg-primary text-primary-foreground glow-border">
                   Purchase for ${book.price.toFixed(2)}
                 </Button>
+                <BookPreview book={book} trigger={
+                  <Button variant="secondary">
+                    Preview Book
+                  </Button>
+                } />
                 <Button variant="outline">
                   Add to Wishlist
                 </Button>

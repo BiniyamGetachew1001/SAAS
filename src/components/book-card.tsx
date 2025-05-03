@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { BookPreview } from "@/components/book-preview";
 
 interface Book {
   id: string;
@@ -14,6 +15,7 @@ interface Book {
   price: number;
   category: string;
   description: string;
+  previewPages?: string[];
 }
 
 interface BookCardProps {
@@ -138,6 +140,17 @@ export function BookCard({ book }: BookCardProps) {
               Purchase
             </Link>
           </Button>
+          <BookPreview
+            book={book}
+            trigger={
+              <Button
+                variant="secondary"
+                className={`w-full sm:w-auto transition-all duration-300 ${isHovered ? 'shadow-md' : ''}`}
+              >
+                Preview
+              </Button>
+            }
+          />
           <Button
             asChild
             variant="outline"
