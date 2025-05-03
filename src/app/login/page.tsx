@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { MainLayout } from "@/components/main-layout";
@@ -12,12 +12,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,11 +28,22 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const success = await login(username, password);
-      if (success) {
-        router.push("/");
+      let success;
+
+      if (isSignUp) {
+        success = await signup(email, password);
+        if (success) {
+          router.push(redirect);
+        } else {
+          setError("Failed to create account. Email may already be in use.");
+        }
       } else {
-        setError("Invalid username or password");
+        success = await login(email, password);
+        if (success) {
+          router.push(redirect);
+        } else {
+          setError("Invalid email or password");
+        }
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -44,9 +58,13 @@ export default function LoginPage() {
       <div className="container flex items-center justify-center min-h-[calc(100vh-16rem)] py-12">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold tracking-tight">Sign in to your account</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              {isSignUp ? "Create an account" : "Sign in to your account"}
+            </CardTitle>
             <CardDescription>
-              Enter your credentials to access your account
+              {isSignUp
+                ? "Enter your details to create a new account"
+                : "Enter your credentials to access your account"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -58,12 +76,13 @@ export default function LoginPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="username"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -79,14 +98,25 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading
+                  ? (isSignUp ? "Creating account..." : "Signing in...")
+                  : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center space-y-2">
-            <div className="text-sm text-muted-foreground">
+            <Button
+              variant="link"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm"
+            >
+              {isSignUp
+                ? "Already have an account? Sign in"
+                : "Don't have an account? Sign up"}
+            </Button>
+            <div className="text-sm text-muted-foreground mt-2">
               <span>Demo credentials: </span>
-              <span className="font-medium">admin / admin123</span>
+              <span className="font-medium">admin@example.com / admin123</span>
             </div>
           </CardFooter>
         </Card>
