@@ -60,10 +60,7 @@ export function BookPreview({ book, trigger }: BookPreviewProps) {
             <div className="relative w-full aspect-[3/4] max-w-[500px] mx-auto border border-border rounded-md overflow-hidden">
               {book.previewPages && book.previewPages[currentPage] ? (
                 <div className="w-full h-full p-6 bg-card text-card-foreground overflow-y-auto">
-                  <div 
-                    className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: book.previewPages[currentPage] }}
-                  />
+                  <div dangerouslySetInnerHTML={{ __html: book.previewPages[currentPage] }} />
                 </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted">

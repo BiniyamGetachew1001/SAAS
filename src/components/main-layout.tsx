@@ -2,8 +2,6 @@
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { BackgroundEffect } from "@/components/background-effect";
-import { PageTransition } from "@/components/page-transition";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -11,11 +9,10 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="relative flex min-h-screen flex-col">
-      <BackgroundEffect />
+    <div className="relative flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">
-        <PageTransition>{children}</PageTransition>
+        {children}
       </main>
       <SiteFooter />
     </div>
